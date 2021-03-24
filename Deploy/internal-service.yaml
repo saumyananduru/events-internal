@@ -11,6 +11,6 @@ spec:
     targetPort: 8082
   selector:
     app: events-internal
-  type: LoadBalancer
+  type: ClusterIP
 status:
   loadBalancer: {}
