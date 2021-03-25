@@ -16,7 +16,7 @@ spec:
         app: events-internal
     spec:
       containers:
-      - image: kfedorov2020/internal:v1.0.0
+      - image: gcr.io/mar-roidtc508/kfedorov2020/internal:v1.0.0
         name: events-internal
         imagePullPolicy: "Always"
         resources:
