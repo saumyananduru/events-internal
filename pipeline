@@ -4,8 +4,7 @@ pipeline {
         stage('Repo') {
             steps {
                 echo 'Retreving data from github'
-                git branch 'master',
-                    url: ''
+                git 'https://github.com/kfedorov2020/Team2-Internal-day1.git'
             }
         }
         stage('Pre-Check') {
@@ -25,8 +24,6 @@ pipeline {
             steps {
                 echo 'install'
                 sh "npm install"
-                echo 'run test'
-                sh "npm test"
             }
         }
 
@@ -34,16 +31,16 @@ pipeline {
             steps {
                 echo 'build id=${env.BUILD_ID}'
                 echo 'Tests passed'
-                sh "gcloud builds submit -t gcr.io/mar-roit501-/"
+                sh "gcloud builds submit --tag gcr.io/mar-roidtc505/events-internal-image:V2.665 ."
             }
         }
 
         stage('Cluster Details') {
             steps {
                 echo 'Get Cluster Credentials'
-                sh "gcloud container cluster get-credentials cluster-name "
+                sh "gcloud container clusters get-credentials cluster-demo --zone us-central1-c --project mar-roidtc505"
                 echo 'Update the image'
-                sh "kubectl set image deployment/demo-ui demo-ui=gcr.io/image"
+                sh "kubectl set image deployment/events-internal events-internal=gcr.io/mar-roidtc505/events-internal-image:V2.665"
             }
         }
 
