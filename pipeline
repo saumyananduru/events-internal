@@ -1,0 +1,51 @@
+pipeline {
+    agent any
+    stages {
+        stage('Repo') {
+            steps {
+                echo 'Retreving data from github'
+                git branch 'master',
+                    url: ''
+            }
+        }
+        stage('Pre-Check') {
+            steps {
+                echo 'workspace and  version'
+                sh "echo $WORKSPACE"
+                sh "gcloud version"
+                sh "nodejs -v"
+                sh "npm -v"
+            }
+        }
+
+        stage('Test') {
+            environment {
+                PORT = 8081
+            }
+            steps {
+                echo 'install'
+                sh "npm install"
+                echo 'run test'
+                sh "npm test"
+            }
+        }
+
+        stage('Build Docker'){
+            steps {
+                echo 'build id=${env.BUILD_ID}'
+                echo 'Tests passed'
+                sh "gcloud builds submit -t gcr.io/mar-roit501-/"
+            }
+        }
+
+        stage('Cluster Details') {
+            steps {
+                echo 'Get Cluster Credentials'
+                sh "gcloud container cluster get-credentials cluster-name "
+                echo 'Update the image'
+                sh "kubectl set image deployment/demo-ui demo-ui=gcr.io/image"
+            }
+        }
+
+    }
+}
